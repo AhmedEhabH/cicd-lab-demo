@@ -7,14 +7,17 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: python -m py_compile app.py
+      - run: pip install flake8
+      - run: flake8 app.py test_app.py
+      - name: Demo only - slow step
+        run: sleep 20
 
   test:
     runs-on: ubuntu-24.04
@@ -25,3 +28,11 @@ jobs:
           python-version: "3.12"
       - run: pip install pytest
       - run: pytest
+      - name: Demo only - slow step
+        run: sleep 20
+
+  summary:
+    needs: [lint, test]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "lint and test both passed"
